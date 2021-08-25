@@ -141,5 +141,5 @@ pio.templates["sisl_dark"] = go.layout.Template(
     },
 )
 
-# This will be the default one for the sisl.viz.plotly module
+# This will be the default one for the sisl.viz module
 pio.templates.default = "sisl"

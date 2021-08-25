@@ -24,6 +24,7 @@ class Backend(ABC):
         - `draw_line3D`, optional
         - `draw_scatter3D`, optional
         - `show`, optional
+        - `write_image`, optional (for the CLI to save images, probably useful for GUIs too)
 
     (2) specific backend of a plot:
         - `draw`, MUST
@@ -214,6 +215,16 @@ class Backend(ABC):
             the scatter. This will of course be framework specific
         """
         raise NotImplementedError(f"{self.__class__.__name__} doesn't implement a draw_scatter3D method.")
+    
+    def write_image(self, filename, *args, **kwargs):
+        """Writes an image of the plot
+        
+        Parameters
+        -----------
+        filename: str or Path
+            the name of the file that should be created, including extension.
+        """
+        raise NotImplementedError(f"{self.__class__.__name__} doesn't implement a method to write images.")
 
 
 class MultiplePlotBackend(Backend):

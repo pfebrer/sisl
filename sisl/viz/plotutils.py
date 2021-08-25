@@ -2,7 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 import os
-import glob
 import dill
 import sys
 from pathlib import Path
@@ -10,7 +9,6 @@ from pathlib import Path
 import numpy as np
 import itertools
 from pathos.pools import ProcessPool as Pool
-import tqdm
 
 from copy import deepcopy
 
@@ -689,6 +687,7 @@ def run_multiple(func, *args, argsList = None, kwargsList = None, messageFn = No
     results = [None]*nTasks
 
     #Initialize the pool iterator and the progress bar that controls it
+    import tqdm
     progress = tqdm.tqdm(pool.imap(func, zip(*toZip)), total = nTasks)
 
     #Set a description for the progress bar

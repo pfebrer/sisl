@@ -5,14 +5,15 @@ __all__ = ["add_presets", "get_preset"]
 
 PRESETS = {
 
-    "dark": {
-        "layout": {"template": "sisl_dark"},
-        "bands_color": "#ccc",
+    "red": {
+        "bands_color": "red",
         "bands_width": 2
     },
-
+    "blue": {
+        "spindown_color": "blue"
+    }
+    
 }
-
 
 def add_presets(**presets):
     """

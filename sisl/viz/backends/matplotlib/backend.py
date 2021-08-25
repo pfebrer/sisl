@@ -92,6 +92,9 @@ class MatplotlibBackend(Backend):
 
     def draw_scatter(self, x, y, name=None, marker={}, text=None, **kwargs):
         return self.axes.scatter(x, y, c=marker.get("color"), s=marker.get("size", 1), cmap=marker.get("colorscale"), label=name, **kwargs)
+    
+    def write_image(self, filename):
+        return self.figure.savefig(filename)
 
 
 class MatplotlibMultiplePlotBackend(MatplotlibBackend, MultiplePlotBackend):

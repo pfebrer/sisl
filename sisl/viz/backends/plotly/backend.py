@@ -369,6 +369,9 @@ class PlotlyBackend(Backend):
 
     def draw_scatter3D(self, *args, **kwargs):
         self.draw_line3D(*args, mode="markers", **kwargs)
+    
+    def write_image(self, filename):
+        return self.figure.write_image(filename)
 
 
 class PlotlyMultiplePlotBackend(PlotlyBackend, MultiplePlotBackend):

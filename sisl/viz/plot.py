@@ -24,7 +24,6 @@ from .configurable import (
     Configurable, ConfigurableMeta,
     vizplotly_settings, _populate_with_settings
 )
-from ._presets import get_preset
 from .plotutils import (
     init_multiple_plots, repeat_if_children, dictOfLists2listOfDicts,
     trigger_notification, spoken_message,
@@ -32,9 +31,8 @@ from .plotutils import (
 )
 from .input_fields import (
     TextInput, SileInput, SwitchInput,
-    ColorPicker, DropdownInput, IntegerInput,
-    FloatInput, RangeSlider, QueriesInput,
-    ProgramaticInput, PlotableInput
+    DropdownInput, IntegerInput,
+    ProgramaticInput,
 )
 from ._shortcuts import ShortCutable
 
@@ -190,6 +188,7 @@ class Plot(ShortCutable, Configurable, metaclass=PlotMeta):
 
         DropdownInput(
             key="backend", name="Backend",
+            dtype=str,
             default=None,
             params = {},
             width = "s100% m50% l33%",
@@ -633,10 +632,6 @@ class Plot(ShortCutable, Configurable, metaclass=PlotMeta):
             self.PROVIDED_H = True
             self.H = H
             self.setup_hamiltonian()
-
-        if presets is not None:
-            if isinstance(presets, str):
-                presets = [presets]
 
         # on_figure_change is triggered after get_figure.
         self.on_figure_change = None
@@ -1388,7 +1383,8 @@ class Plot(ShortCutable, Configurable, metaclass=PlotMeta):
         Parameters
         ---------
         path: str
-            The path to the file where you want to save the plot
+            The path to the file where you want to save the plot.
+            If the path corresponds 
 
         Returns
         ---------

@@ -5,16 +5,14 @@
 Easy plotting from the command line.
 """
 
-import sys
 import argparse
 import ast
 
-import sisl
 from sisl.utils import cmd
 
+from sisl._environ import get_environ_variable
 from .plot import Plot
 from .plotutils import find_plotable_siles, get_avail_presets, get_plot_classes
-from ._user_customs import PRESETS_FILE, PRESETS_VARIABLE, PLOTS_FILE
 
 __all__ = ["splot"]
 
@@ -68,8 +66,8 @@ def splot():
                                      description="Command utility to plot files fast. This command allows great customability." +
                                      "\n\nOnly you know how you like your plots. Therefore, a nice way to use this command is by " +
                                      "using presets that you stored previously. Note that you can either use sisl's provided presets" +
-                                     f" or define your own presets. Sisl is looking for presets under the '{PRESETS_VARIABLE}' variable" +
-                                     f" defined in {PRESETS_FILE}. It should be a dict containing all your presets.",
+                                     f" or define your own presets. You can create your own presets by defining a file in" +
+                                     f" {get_environ_variable('SISL_CONFIGDIR')} that uses `sisl.viz.add_presets`",
     )
 
     # Add default sisl version stuff
@@ -92,7 +90,6 @@ def splot():
         " However, if you want to avoid sisl automatic choice, you can use these subcommands to select a"+
         " plot class. By doing so, you will also get access to plot-specific settings. Try splot bands -h, for example."+
         " Note that you can also build your own plots that will be automatically available here." +
-        f" Sisl is looking to import plots defined in {PLOTS_FILE}."+
         "\n Also note that doing 'splot bands' with any extra arguments will search your current directory "+
         "for *.bands files to plot. The rest of plots will also do this.",
         dest="plot_class"
@@ -148,8 +145,8 @@ def splot():
     # Layout settings require some extra care because layout and template are
     # two separate settings but effectively template goes 'inside' layout
     layout = {} if args.layout is None else args.layout
-    if args.template:
-        layout["template"] = args.template
+    #if args.template:
+    #    layout["template"] = args.template
 
     # These are finally all the keyword arguments that we will pass to plot
     # initialization.
@@ -174,21 +171,27 @@ def splot():
 
     if args.save:
         print(f"Saving it to {args.save}...")
-        plot.save(args.save)
+        try:
+            plot.write_image(args.save)
+        except:
+            plot.save(args.save)
 
     # Show the plot if it was requested
     if getattr(args, "show", True):
+        show_kwargs = {}
 
-        # Extra configuration that the user requested for the display
-        config = {
-            'editable': args.editable,
-            'modeBarButtonsToAdd': [
-                'drawline',
-                'drawopenpath',
-                'drawclosedpath',
-                'drawcircle',
-                'drawrect',
-                'eraseshape'
-            ] if args.drawable else []
-        }
-        plot.show(config=config)
+        if plot.settings["backend"] == "plotly":
+            # Extra configuration that the user requested for the display
+            show_kwargs["config"] = {
+                'editable': args.editable,
+                'modeBarButtonsToAdd': [
+                    'drawline',
+                    'drawopenpath',
+                    'drawclosedpath',
+                    'drawcircle',
+                    'drawrect',
+                    'eraseshape'
+                ] if args.drawable else []
+            }
+
+        plot.show(**show_kwargs)

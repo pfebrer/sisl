@@ -56,6 +56,7 @@ viz = {
     # sisl.
     "plotly": [
         'plotly',
+        'kaleido'
     ],
     "matplotlib": [
         'matplotlib'
@@ -520,8 +521,8 @@ metadata = dict(
          # Add toolbox CLI
          "stool = sisl_toolbox.cli:stoolbox_cli",
          "stoolbox = sisl_toolbox.cli:stoolbox_cli",
-         ]
-        #"splotly = sisl.viz.plotly.splot:splot",
+         "splotly = sisl.viz.splot:splot",
+         ]  
     },
     **setuptools_kwargs
 )
