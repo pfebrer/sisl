@@ -213,6 +213,7 @@ class BasisPlot(GridPlot):
         for_backend = []
         
         for i, orbital_group in enumerate(orbitals):
+            print(i)
             
             orbital_group = orb_param.complete_query(orbital_group)
 
@@ -240,8 +241,8 @@ class BasisPlot(GridPlot):
                 for iso in isos
             ]
             
-            for_backend.append(super()._set_data(trace_name=orbital_group["name"], isos=isos, plot_geom=plot_geom and i == 0))                
-    
+            for_backend.append(super()._set_data(trace_name=orbital_group["name"], isos=isos, plot_geom=plot_geom and len(for_backend) == 0))                
+
         return for_backend
     
     def split_groups(self, on="orbitals", only=None, exclude=None, clean=True, colors=(), **kwargs):
