@@ -522,7 +522,7 @@ class GridPlot(Plot):
         return is_1D_cartesian and (cell[lattice_vecs[0]] > tol).sum() == 1
 
     def _set_data(self, axes, nsc, interp, trace_name, transforms, represent, grid_file,
-        x_range, y_range, z_range, plot_geom, geom_kwargs, transform_bc, reduce_method):
+        x_range, y_range, z_range, plot_geom, geom_kwargs, transform_bc, reduce_method, isos):
 
         if trace_name is None and grid_file:
             trace_name = grid_file.name
@@ -613,7 +613,7 @@ class GridPlot(Plot):
         prepare_func = getattr(self, f"_prepare{self._ndim}D")
 
         # Use it
-        backend_info = prepare_func(grid, values, axes, grid_axes, nsc, trace_name, showlegend=bool(trace_name) or values.ndim == 3)
+        backend_info = prepare_func(grid, values, axes, grid_axes, nsc, trace_name, showlegend=bool(trace_name) or values.ndim == 3, isos=isos)
 
         backend_info["ndim"] = self._ndim
 
