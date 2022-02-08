@@ -213,8 +213,6 @@ class BasisPlot(GridPlot):
         for_backend = []
         
         for i, orbital_group in enumerate(orbitals):
-            print(i)
-            
             orbital_group = orb_param.complete_query(orbital_group)
 
             orbs = orb_param.get_orbitals(orbital_group)
