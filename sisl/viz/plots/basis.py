@@ -229,10 +229,10 @@ class BasisPlot(GridPlot):
             
             if np.any(self.grid.grid < 0):
                 isos = [
-                    {"val": -0.01}, {"val": 0.01, "color": orbital_group["neg_color"] or orbital_group["color"], "name": f'{orbital_group["name"]}, neg'}
+                    {"val": 1e-6}, {"val": -1e-6, "color": orbital_group["neg_color"] or orbital_group["color"], "name": f'{orbital_group["name"]}, neg'}
                 ]
             else:
-                isos=[{"frac": 0.01}]
+                isos=[{"val": 1e-6}]
                 
             isos = [
                 {"color": orbital_group["color"], "name": orbital_group["name"], "opacity": orbital_group["opacity"], **iso} 
