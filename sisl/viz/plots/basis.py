@@ -147,6 +147,16 @@ class BasisPlot(GridPlot):
             it gradually.
             """
         ),
+
+        FloatInput(key='cutoff', name='Cutoff',
+            default=1e-6,
+            help="""The spacing between points of the grid where the basis will be projected (in Ang).
+            If you are plotting a 3D representation, take into account that a very fine and big grid could result in
+            your computer crashing on render. If it's the first time you are using this function,
+            assess the capabilities of your computer by first using a low-precision grid and increase
+            it gradually.
+            """
+        ),
         
         OrbitalQueries(
             key="orbitals", name="Orbitals",
@@ -202,7 +212,7 @@ class BasisPlot(GridPlot):
         # calling it later in _set_data
         self.get_param('orbitals').update_options(self.geometry)
 
-    def _set_data(self, geometry, grid_prec, orbitals, nsc, axes, plot_geom):
+    def _set_data(self, geometry, grid_prec, orbitals, nsc, axes, plot_geom, geom_kwargs, cutoff):
         # Move all atoms inside the unit cell, otherwise the wavefunction is not
         # properly displayed.
         self.geometry = self.geometry.copy()
@@ -211,37 +221,54 @@ class BasisPlot(GridPlot):
         orb_param = self.get_param("orbitals")
         
         for_backend = []
-        
-        for i, orbital_group in enumerate(orbitals):
+
+        all_orbitals = np.array([orb for atom in self.geometry.atoms for orb in atom.orbitals])
+        Zs = self.geometry.atoms.Z
+        for orbital_group in orbitals:
             orbital_group = orb_param.complete_query(orbital_group)
 
             orbs = orb_param.get_orbitals(orbital_group)
             
             if len(orbs) == 0:
                 continue
-        
-            self.grid = sisl.Grid(grid_prec, geometry=self.geometry, dtype=np.float64)
 
-            v = np.zeros(geometry.no)
-            v[orbs] = 1
+            # Create a sub geometry with only the oribitals that we want to plot.
+            ats = self.geometry.o2a(orbs)
+            unique_ats = np.unique(ats)
+
+            atoms = [
+                sisl.Atom(Z=Zs[at], orbitals=all_orbitals[orbs[ats == at]])
+                for at in unique_ats
+            ]
+
+            geometry = sisl.Geometry(self.geometry[unique_ats], atoms, sc=self.geometry.sc)
+
+            # Define a grid with this new geometry
+            self.grid = sisl.Grid(grid_prec, geometry=geometry, dtype=np.float64)
             
-            sisl.physics.electron.wavefunction(v, self.grid, self.geometry)
+            # Project the orbitals onto the grid
+            sisl.physics.electron.wavefunction(np.ones(geometry.no), self.grid, geometry)
             
             if np.any(self.grid.grid < 0):
                 isos = [
-                    {"val": 1e-6}, {"val": -1e-6, "color": orbital_group["neg_color"] or orbital_group["color"], "name": f'{orbital_group["name"]}, neg'}
+                    {"val": cutoff}, {"val": -cutoff, "color": orbital_group["neg_color"] or orbital_group["color"], "name": f'{orbital_group["name"]}, neg'}
                 ]
             else:
-                isos=[{"val": 1e-6}]
+                isos=[{"val": cutoff}]
                 
             isos = [
                 {"color": orbital_group["color"], "name": orbital_group["name"], "opacity": orbital_group["opacity"], **iso} 
                 for iso in isos
             ]
             
-            for_backend.append(super()._set_data(trace_name=orbital_group["name"], isos=isos, plot_geom=plot_geom and len(for_backend) == 0))                
+            for_backend.append(super()._set_data(trace_name=orbital_group["name"], isos=isos, plot_geom=False))              
+        
+        if plot_geom:
+            geom_plot = self.geometry.plot(**{'axes': axes, "nsc": nsc, **geom_kwargs})
+        else:
+            geom_plot = None
 
-        return for_backend
+        return {"geom_plot": geom_plot, "grids": for_backend}
     
     def split_groups(self, on="orbitals", only=None, exclude=None, clean=True, colors=(), **kwargs):
         """
