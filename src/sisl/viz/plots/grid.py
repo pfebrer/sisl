@@ -6,7 +6,7 @@ from sisl.grid import Grid
 from ..data import EigenstateData
 from ..figure import Figure, get_figure
 from ..plot import Plot
-from ..plotters.cell import cell_plot_actions
+from ..plotters.cell import cell_plot_actions, get_ndim
 from ..plotters.grid import draw_grid
 from ..plotters.plot_actions import combined
 from ..processors.axes import sanitize_axes
@@ -17,6 +17,7 @@ from ..processors.eigenstate import (
     project_wavefunction,
     tile_if_k,
 )
+from ..processors.logic import matches
 from ..processors.grid import (
     apply_transforms,
     get_grid_axes,
@@ -128,6 +129,7 @@ def grid_plot(
     
 
     axes = sanitize_axes(axes)
+    ndim = get_ndim(axes)
 
     geometry = grid_geometry(grid, geometry=None)
 
@@ -152,6 +154,7 @@ def grid_plot(
     grid_plottings = draw_grid(data=grid_ds, isos=isos, colorscale=colorscale, crange=crange, cmid=cmid, smooth=smooth)
 
     # Process the cell as well
+    show_cell = matches(ndim, 1, False, show_cell)
     cell_plottings = cell_plot_actions(
         cell=grid, show_cell=show_cell, cell_style=cell_style,
         axes=axes,

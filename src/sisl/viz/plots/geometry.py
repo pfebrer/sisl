@@ -173,9 +173,10 @@ def geometry_plot(geometry: Geometry,
     atoms_scale = _sanitize_scale(atoms_scale, ndim, atoms_ndim_scale)
     final_atoms = scale_variable(projected_atoms, "size", scale=atoms_scale)
     atom_mode = _get_atom_mode(drawing_mode, ndim)
+    ax_equal = matches(ndim, 1, False, True)
     atom_plottings = draw_xarray_xy(
         data=final_atoms, x="x", y="y", z=z, width="size", what=atom_mode, colorscale=atoms_colorscale,
-        set_axequal=True, name="Atoms"
+        set_axequal=ax_equal, name="Atoms"
     )
     
     # Here we start to process bonds
@@ -192,7 +193,7 @@ def geometry_plot(geometry: Geometry,
 
     bonds_scale = _sanitize_scale(bonds_scale, ndim, bonds_ndim_scale)
     final_bonds = scale_variable(bond_lines, "width", scale=bonds_scale)
-    bond_plottings = draw_xarray_xy(data=final_bonds, x="x", y="y", z=z, set_axequal=True, name="Bonds", colorscale=bonds_colorscale)
+    bond_plottings = draw_xarray_xy(data=final_bonds, x="x", y="y", z=z, set_axequal=ax_equal, name="Bonds", colorscale=bonds_colorscale)
     
     # And now the cell
     show_cell = matches(ndim, 1, False, show_cell)
@@ -307,9 +308,10 @@ def sites_plot(
     sites_scale = _sanitize_scale(sites_scale, ndim, sites_ndim_scale)
     final_sites = scale_variable(projected_sites, "size", scale=sites_scale)
     sites_mode = _get_atom_mode(drawing_mode, ndim)
+    ax_equal = matches(ndim, 1, False, True)
     site_plottings = draw_xarray_xy(
         data=final_sites, x="x", y="y", z=z, width="size", what=sites_mode, colorscale=sites_colorscale,
-        set_axequal=True, name=sites_name,
+        set_axequal=ax_equal, name=sites_name,
     )
     
     # And now the cell
