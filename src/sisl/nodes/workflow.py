@@ -1016,6 +1016,9 @@ class Workflow(Node):
 
         self._inputs.update(inputs)
 
+        # Now, update all connections between this workflow and other nodes.
+        self._update_connections(self._inputs)
+
         self._receive_outdated()
 
         return self

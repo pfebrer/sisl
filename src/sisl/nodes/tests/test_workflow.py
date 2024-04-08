@@ -60,6 +60,30 @@ def triple_sum(request) -> Type[Workflow]:
     return triple_sum
 
 
+def test_updated_connections(triple_sum):
+
+    a = ConstantNode(2)
+    b = ConstantNode(3)
+    c = ConstantNode(5)
+
+    val = triple_sum(a, b, c)
+
+    # They are linked to two nodes: the workflow, and the workflow input node.
+    assert len(a._output_links) == 2
+    assert len(b._output_links) == 2
+    assert len(c._output_links) == 2
+    assert len(val._input_nodes) == 3
+    assert val.get() == 10
+
+    val.update_inputs(a=3)
+
+    assert len(a._output_links) == 0
+    assert len(b._output_links) == 2
+    assert len(c._output_links) == 2
+    assert len(val._input_nodes) == 2
+    assert val.get() == 11
+
+
 def test_named_vars(triple_sum):
     # Check that the first_sum variable has been detected correctly.
     assert set(triple_sum.dryrun_nodes.named_vars) == {"first_sum"}
