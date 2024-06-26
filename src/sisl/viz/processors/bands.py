@@ -5,6 +5,7 @@
 # from __future__ import annotations
 
 import itertools
+from dataclasses import asdict, is_dataclass
 from typing import List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -95,6 +96,11 @@ def style_bands(
         Whether the bands will be grouped in the legend. This will determine
         how the names of each band are set
     """
+
+    if is_dataclass(bands_style):
+        bands_style = asdict(bands_style)
+    if is_dataclass(spindown_style):
+        spindown_style = asdict(spindown_style)
 
     # If the user provided a styler function, apply it.
     if bands_style.get("styler") is not None:

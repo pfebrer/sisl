@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import itertools
-from dataclasses import asdict
+from dataclasses import asdict, is_dataclass
 from typing import Any, List, Optional, Sequence, Tuple, TypedDict, Union
 
 import numpy as np
@@ -403,6 +403,9 @@ def style_bonds(
     geometry = bonds_data.geometry
 
     nbonds = bonds_data.bonds.shape[0]
+
+    if is_dataclass(bonds_style):
+        bonds_style = asdict(bonds_style)
 
     # Add the default styles first
     bonds_styles: Sequence[BondsStyleSpec] = [

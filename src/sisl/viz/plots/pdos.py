@@ -1,8 +1,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-from __future__ import annotations
-
 from typing import Any, Literal, Optional, Sequence, Tuple
 
 import numpy as np
@@ -11,7 +9,6 @@ from sisl.viz.types import OrbitalStyleQuery
 
 from ..data import PDOSData
 from ..figure import Figure, get_figure
-from ..plot import Plot
 from ..plotters.xarray import draw_xarray_xy
 from ..processors.data import accept_data
 from ..processors.logic import swap

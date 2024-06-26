@@ -1,8 +1,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-from __future__ import annotations
-
 from typing import Callable, ChainMap, Literal, Optional, Sequence, Tuple, Union
 
 from sisl._core import Geometry, Grid
@@ -57,7 +55,7 @@ def _get_structure_plottings(
 
 
 def grid_plot(
-    grid: Optional[Grid] = None,
+    grid: Optional[Grid],
     axes: Axes = ["z"],
     represent: Literal[
         "real", "imag", "mod", "phase", "deg_phase", "rad_phase"

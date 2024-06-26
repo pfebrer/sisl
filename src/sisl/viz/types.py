@@ -42,6 +42,7 @@ class StyleSpec:
     dash: Optional[
         Literal["solid", "dot", "dash", "longdash", "dashdot", "longdashdot"]
     ] = None
+    width: Optional[float] = None
 
 
 @dataclass

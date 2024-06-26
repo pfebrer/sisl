@@ -4,7 +4,7 @@
 # TODO when forward refs work with annotations
 # from __future__ import annotations
 
-import itertools
+from dataclasses import asdict, is_dataclass
 from typing import Any, List, Literal, TypedDict, Union
 
 import numpy as np
@@ -131,6 +131,9 @@ def cell_to_lines(
         Style of the cell lines. A dictionary optionally containing
         the keys "color", "width" and "opacity".
     """
+    if is_dataclass(cell_style):
+        cell_style = asdict(cell_style)
+
     cell_data = cell_data.reindex(a=[0, 1, 2], b=[0, 1, 2], c=[0, 1, 2])
 
     if how == "box":

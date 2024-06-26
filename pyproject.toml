@@ -115,6 +115,7 @@ wheel.expand-macos-universal-tags = true
 sgeom = "sisl._core.geometry:sgeom"
 sgrid = "sisl._core.grid:sgrid"
 sdata = "sisl.utils._sisl_cmd:sisl_cmd"
+splot = "sisl.viz.cli:app"
 stoolbox = "sisl_toolbox.cli:stoolbox_cli"
 
 
