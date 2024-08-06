@@ -119,6 +119,7 @@ sgeom = "sisl._core.geometry:sgeom"
 sgrid = "sisl._core.grid:sgrid"
 sdata = "sisl.utils._sisl_cmd:sisl_cmd"
 stoolbox = "sisl_toolbox.cli:stoolbox_cli"
+sisl-basis = "sisl_toolbox.siesta.minimizer.basis_optimization:typer_app"
 
 
 [project.urls]
@@ -214,6 +215,11 @@ docs = [
     "pyvis",
     "pybtex",
     "pandoc",
+]
+
+basis-optim = [
+    "typer[all]",
+    "pybads",
 ]
 
 
