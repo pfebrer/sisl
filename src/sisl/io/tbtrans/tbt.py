@@ -12,7 +12,7 @@ except Exception:
 
 import itertools
 from functools import reduce
-from typing import Literal, Optional, Union
+from typing import Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 
@@ -22,7 +22,7 @@ ndarray = np.ndarray
 from scipy.sparse import SparseEfficiencyWarning, csr_matrix, issparse
 
 import sisl._array as _a
-from sisl import Atoms, Geometry, constant
+from sisl import Atoms, Geometry, Grid, SparseCSR, constant
 from sisl._core.sparse import _ncol_to_indptr
 from sisl._help import wrap_filterwarnings
 from sisl._internal import set_module
@@ -2329,6 +2329,63 @@ class tbtncSileTBtrans(_devncSileTBtrans):
                 )
             DM = DensityMatrix.fromsp(geometry, dm)
         return DM
+
+    def LDOS(
+        self,
+        geometry,
+        grid_shape: Tuple[int, int, int],
+        reduce_grid: Sequence[int] = (),
+        Erange: Optional[Tuple[float, float]] = None,
+        Ebatch: Optional[int] = 1,
+    ):
+        # Select energies.
+        Es = self.E
+        if Erange is not None:
+            Es = Es[(Es >= Erange[0]) & (Es <= Erange[1])]
+        nE = len(Es)
+
+        # Generate the grid
+        grid = Grid(grid_shape, geometry=geometry)
+
+        # Get the psi values on the grid
+        psi_values = geometry._orbital_values(grid.shape)
+
+        # Read the template density matrix
+        dm = self.density_matrix(Es[0], geometry=geometry)
+
+        if Ebatch is None:
+            Ebatch = nE
+
+        all_LDOS = []
+        for batch_start in range(0, nE, Ebatch):
+            print(batch_start)
+            batch_end = min(batch_start + Ebatch, nE)
+            batch_length = batch_end - batch_start
+
+            all_dms = SparseCSR(dm.tocsr(), dim=batch_length)
+
+            # Loop over energy points and compute their LDOS
+            for iE, E in enumerate(Es[batch_start:batch_end]):
+
+                E_dm = self.density_matrix(E, geometry=geometry)
+                all_dms.data[:, iE] = E_dm._csr.data[:, 0]
+
+            # Project the density on the grid
+            batch_LDOS = psi_values.reduce_orbital_products(
+                all_dms, dm.sc, reduce_grid=reduce_grid
+            )
+
+            all_LDOS.append(batch_LDOS)
+
+        return np.concatenate(all_LDOS, axis=-1)
+
+        # LDOS = LDOS.reshape(-1, E_chunk)
+
+        # Store Z-resolved LDOS
+        # LDOS[:, iE] = grid.sum(0).sum(1).grid[0, 0]
+
+        # np.savetxt(savepath, LDOS)
+        # np.savetxt(LDOS_dir / f"LDOS_{frame.name.split('.')[0]}.txt", LDOS)
 
     @missing_input_fdf([("TBT.COOP.Gf", "True")])
     def orbital_COOP(self, E: EType, kavg=True, isc=None, orbitals=None) -> csr_matrix:
